@@ -49,6 +49,11 @@ class RedTeamOrchestrator:
         repo_dir: Optional[str] = None,
     ):
         self.api_key = api_key or _get_api_key()
+        if not self.api_key:
+            raise ValueError(
+                "Missing API key for AsyncOpenAI client. Please provide 'api_key' explicitly "
+                "or set the 'OPENROUTER_API_KEY' or 'API_KEY' environment variable."
+            )
         self.base_url = base_url or DEFAULT_BASE_URL
         self.model = model or DEFAULT_MODEL
         self.repo_dir = repo_dir or ""
