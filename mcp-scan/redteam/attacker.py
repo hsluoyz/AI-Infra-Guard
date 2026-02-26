@@ -86,7 +86,7 @@ class AttackerAgent:
         history: List[ConversationTurn],
         phase: Optional[CrescendoPhase] = None,
         extra_context: Optional[str] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         生成下一轮攻击。返回包含 thought, message, attack_technique, reflection 的字典。
         """
