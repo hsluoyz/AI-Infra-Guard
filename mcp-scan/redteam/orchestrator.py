@@ -195,12 +195,16 @@ class RedTeamOrchestrator:
             if not strategy.should_expand(node):
                 return
             history = node.conversation_history()
+            # 注意：history[0] 是 root 节点的「空」占位轮次（attack_message / target_response 皆为空字符串），
+            # 仅用于统一对话树结构，不应暴露给 attacker / target / evaluator。
+            # 因此下面统一使用 history[1:] 只传递真实的对话轮次；
+            # 当 node 为 root（depth=0）时，history[1:] 为空列表，表示「当前无历史对话」，这是 *有意为之*。
             # 生成 branch_factor 个变体
             candidates: List[AttackNode] = []
             for _ in range(strategy.branch_factor):
                 attack_out = await self.attacker.generate_attack(
                     attack_target=attack_target,
-                    history=history[1:],  # 去掉 root 的空 turn
+                    history=history[1:],  # 去掉 root 的空占位轮次；root 节点时传入空历史是预期行为
                     phase=None,
                 )
                 msg = attack_out.get("message", "").strip()
