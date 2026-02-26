@@ -58,15 +58,38 @@ def _format_tap(result: dict) -> str:
         "",
     ]
     for n in result.get("success_nodes", []):
-        t = n.turn
-        lines.append(f"- **{n.node_id}** (depth={n.depth}, score={n.score})")
-        lines.append(f"  - 攻击: {_escape_md(t.attack_message)}")
-        lines.append(f"  - 技术: {t.attack_technique or '-'}")
+        if isinstance(n, dict):
+            t = n.get("turn") or {}
+            node_id = n.get("node_id", "")
+            depth = n.get("depth", "")
+            score = n.get("score", "")
+            attack_message = _escape_md((t or {}).get("attack_message", ""))
+            attack_technique = (t or {}).get("attack_technique") or "-"
+        else:
+            t = getattr(n, "turn", None)
+            node_id = getattr(n, "node_id", "")
+            depth = getattr(n, "depth", "")
+            score = getattr(n, "score", "")
+            attack_message = _escape_md(getattr(t, "attack_message", "")) if t is not None else ""
+            attack_technique = getattr(t, "attack_technique", None) or "-"
+        lines.append(f"- **{node_id}** (depth={depth}, score={score})")
+        lines.append(f"  - 攻击: {attack_message}")
+        lines.append(f"  - 技术: {attack_technique}")
         lines.append("")
     lines.append("## 叶节点得分摘要")
     lines.append("")
     for n in result.get("leaves", []):
-        lines.append(f"- {n.node_id}: score={n.score}, on_topic={n.on_topic}, success={n.is_successful}")
+        if isinstance(n, dict):
+            node_id = n.get("node_id", "")
+            score = n.get("score", "")
+            on_topic = n.get("on_topic", "")
+            is_successful = n.get("is_successful", "")
+        else:
+            node_id = getattr(n, "node_id", "")
+            score = getattr(n, "score", "")
+            on_topic = getattr(n, "on_topic", "")
+            is_successful = getattr(n, "is_successful", "")
+        lines.append(f"- {node_id}: score={score}, on_topic={on_topic}, success={is_successful}")
     lines.append("")
     return "\n".join(lines)
 
