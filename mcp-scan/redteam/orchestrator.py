@@ -241,9 +241,26 @@ class RedTeamOrchestrator:
                 await expand_node(c)
 
         await expand_node(root)
+
+        def collect_reachable_nodes(node: AttackNode) -> List[AttackNode]:
+            """
+            从 root 出发遍历 TAP 树，收集最终树上（未被剪枝掉）的所有节点。
+            这样 success_nodes / best_score 等统计只基于最终树，而不是所有候选节点。
+            """
+            reachable: List[AttackNode] = []
+            stack: List[AttackNode] = [node]
+            while stack:
+                current = stack.pop()
+                reachable.append(current)
+                # 假设 AttackNode.children 存在且在 add_child 时已维护
+                for child in getattr(current, "children", []) or []:
+                    stack.append(child)
+            return reachable
+
+        reachable_nodes = collect_reachable_nodes(root)
         leaves = strategy.leaves(root)
-        success_nodes = [n for n in all_nodes if n.is_successful]
-        best_score = max((n.score for n in all_nodes if n.depth > 0), default=0.0)
+        success_nodes = [n for n in reachable_nodes if n.is_successful]
+        best_score = max((n.score for n in reachable_nodes if n.depth > 0), default=0.0)
         return {
             "strategy": "tap",
             "attack_target": attack_target,
