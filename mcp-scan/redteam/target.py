@@ -57,13 +57,14 @@ def gather_code_context(repo_dir: str) -> str:
             if len(text) > MAX_FILE_CHARS:
                 text = text[:MAX_FILE_CHARS] + "\n... (truncated)"
             rel = path.relative_to(repo)
+            prospective_total = total_chars + len(text)
+            if prospective_total > 300000:
+                break
             lines.append(f"--- FILE: {rel} ---")
             lines.append(text)
             lines.append("")
-            total_chars += len(text)
+            total_chars = prospective_total
             file_count += 1
-            if total_chars > 300000:
-                break
     except Exception as e:
         lines.append(f"Error reading repo: {e}")
     if not lines:
