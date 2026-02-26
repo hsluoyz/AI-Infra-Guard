@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional, Any, Callable, Awaitable
+from typing import List, Optional, Any
 
 # ---------- 数据结构 ----------
 
