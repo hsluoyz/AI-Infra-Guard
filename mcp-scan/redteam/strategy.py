@@ -92,10 +92,17 @@ class CrescendoStrategy:
 
     def current_phase(self, round_index: int) -> CrescendoPhase:
         """根据当前轮次返回所处阶段（简化：按轮数均分到四阶段）。"""
-        if round_index >= self.max_total_rounds:
-            return self.phases[-1]
-        step = max(1, self.max_total_rounds // len(self.phases))
-        phase_index = min(round_index // step, len(self.phases) - 1)
+        # 将 round_index 限制在有效范围内，使其与 should_continue 的逻辑一致，
+        # 避免在超过 max_total_rounds 时仍然“积极地”选择阶段。
+        if self.max_total_rounds <= 0:
+            # 退化情况：没有有效轮次时始终视为第一个阶段
+            effective_round = 0
+        else:
+            # 最大有效轮次索引为 max_total_rounds - 1
+            effective_round = min(round_index, self.max_total_rounds - 1)
+
+        step = max(1, self.max_total_rounds // len(self.phases)) if self.max_total_rounds > 0 else 1
+        phase_index = min(effective_round // step, len(self.phases) - 1)
         return self.phases[phase_index]
 
     def should_continue(
