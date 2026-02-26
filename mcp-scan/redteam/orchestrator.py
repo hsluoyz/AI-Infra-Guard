@@ -185,11 +185,12 @@ class RedTeamOrchestrator:
             depth=0,
         )
         all_nodes: List[AttackNode] = [root]
-        node_counter = [0]
+        node_counter = 0
 
         def next_id() -> str:
-            node_counter[0] += 1
-            return f"n{node_counter[0]}"
+            nonlocal node_counter
+            node_counter += 1
+            return f"n{node_counter}"
 
         async def expand_node(node: AttackNode) -> None:
             if not strategy.should_expand(node):
