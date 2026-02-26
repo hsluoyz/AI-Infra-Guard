@@ -52,7 +52,7 @@ def gather_code_context(repo_dir: str) -> str:
                 continue
             try:
                 text = resolved.read_text(encoding="utf-8", errors="replace")
-            except Exception:
+            except (OSError, UnicodeError):
                 continue
             if len(text) > MAX_FILE_CHARS:
                 text = text[:MAX_FILE_CHARS] + "\n... (truncated)"
