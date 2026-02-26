@@ -11,7 +11,7 @@ from datetime import datetime
 def _escape_md(s: str) -> str:
     if not s:
         return ""
-    return s.replace("|", "\\|").replace("\n", " ")[:200]
+    return s.replace("|", "\\|").replace("\n", " ")
 
 
 def _format_crescendo(result: dict) -> str:
