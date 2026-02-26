@@ -120,7 +120,7 @@ class AttackerAgent:
         except (json.JSONDecodeError, TypeError) as e:
             return {
                 "thought": "",
-                "message": content[:2000],
+                "message": "",
                 "attack_technique": "unknown",
                 "reflection": f"Parse error: {e}",
             }
