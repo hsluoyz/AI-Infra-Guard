@@ -159,7 +159,10 @@ class TAPStrategy:
             return False
         if node.is_successful:
             return False
-        if node.score < self.min_score_to_expand and node.depth > 0:
+        # 根节点（depth == 0）总是允许至少扩展一次，其 score 可能尚未初始化
+        if node.depth == 0:
+            return True
+        if node.score < self.min_score_to_expand:
             return False
         return True
 
