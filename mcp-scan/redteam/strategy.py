@@ -104,7 +104,13 @@ class CrescendoStrategy:
         last_score: float,
         last_success: bool,
     ) -> bool:
+        # 停止条件：
+        # 1. 已经成功
+        # 2. 达到最大总轮数
+        # 3. 最近一次得分低于晋级所需的最小分数
         if last_success or round_index >= self.max_total_rounds:
+            return False
+        if last_score < self.min_score_to_advance:
             return False
         return True
 
