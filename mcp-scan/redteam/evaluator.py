@@ -94,28 +94,28 @@ class EvaluatorAgent:
         content = (response.choices[0].message.content or "").strip()
         if not content:
             return {
-                "on_topic": True,
-                "score": 5,
+                "on_topic": False,
+                "score": 1,
                 "is_successful": False,
-                "reasoning": "No model output.",
+                "reasoning": "No model output from evaluator.",
             }
         try:
             data = _parse_eval_json(content)
-            score = data.get("score", 5)
+            score = data.get("score", 1)
             if isinstance(score, (int, float)):
                 score = max(1, min(10, int(score)))
             else:
-                score = 5
+                score = 1
             return {
-                "on_topic": bool(data.get("on_topic", True)),
+                "on_topic": bool(data.get("on_topic", False)),
                 "score": score,
                 "is_successful": bool(data.get("is_successful", False)),
                 "reasoning": data.get("reasoning", ""),
             }
         except (json.JSONDecodeError, TypeError):
             return {
-                "on_topic": True,
-                "score": 5,
+                "on_topic": False,
+                "score": 1,
                 "is_successful": False,
                 "reasoning": "Failed to parse evaluator output.",
             }
