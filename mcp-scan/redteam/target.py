@@ -30,12 +30,28 @@ def gather_code_context(repo_dir: str) -> str:
     file_count = 0
     try:
         for path in sorted(repo.rglob("*")):
-            if not path.is_file() or file_count >= MAX_FILES:
+            # Enforce maximum number of files to process
+            if file_count >= MAX_FILES:
                 break
+            # Skip symbolic links to avoid traversing outside the repo or special targets
+            if path.is_symlink():
+                continue
+            # Resolve the real path and ensure it stays within the repository boundary
+            try:
+                resolved = path.resolve()
+            except Exception:
+                continue
+            try:
+                resolved.relative_to(repo)
+            except ValueError:
+                # Resolved path is outside the repository; skip it
+                continue
+            if not resolved.is_file():
+                continue
             if path.suffix.lower() not in READABLE_EXT:
                 continue
             try:
-                text = path.read_text(encoding="utf-8", errors="replace")
+                text = resolved.read_text(encoding="utf-8", errors="replace")
             except Exception:
                 continue
             if len(text) > MAX_FILE_CHARS:
